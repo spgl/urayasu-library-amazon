@@ -2,7 +2,7 @@ if (window != top) return;
 if (location.hostname !== 'opac.city.urayasu.chiba.jp') return;
 
 // console.log("main script");
-// $('body').css('background-color', '#b4e9cc');
+$('body').css('background-color', '#c4f3dc');
 
 var amazonIconUrl = '<img src="https://www.amazon.com/favicon.ico" style="width:18px;height:18px;" />';
 var aRoot;
@@ -41,29 +41,29 @@ if (location.pathname == "/opw/OPW/OPWSRCHLIST.CSP") {
 
 
 function addColumn($headerColumn, $lineColumn, aRoot) {
-    $headerColumn.before('<th><span class="smallfont">Amazon</span></th>');
-    var writerIndex;
+    var authorIndex;
     console.log($headerColumn.parent().find('th').length);
     $headerColumn.parent().find('th').each(function () {
         if ($(this).find('span.smallfont').text() == '著者名▼') {
-            writerIndex = $(this).index();
-            console.log("index=" + writerIndex);
+            authorIndex = $(this).index();
+            console.log("index=" + authorIndex);
         }
     });
+    $headerColumn.before('<th><span class="smallfont">Amazon</span></th>');
 
 
     $lineColumn.each(
         function () {
-            var writerStr;
-            $(this).find('a').attr('target', '_blank');
+            var authorStr;
+            // $(this).find('a').attr('target', '_blank');
 
-            if (writerIndex != null) {
-                writerStr = $(this).siblings().eq(writerIndex - 2).text();
+            if (authorIndex != null) {
+                authorStr = $(this).siblings().eq(authorIndex - 1).text().replace(/／.*$/,'');
             } else {
-                writerStr = ''
+                authorStr = ''
             }
-            console.log('writerStr = ' + writerStr);
-            $(this).before('<td><a href="' + aRoot + $(this).text() + writerStr + '" target="_blank" >' + amazonIconUrl + '</a></td>');
+            // console.log('authorStr = ' + authorStr);
+            $(this).before('<td><a href="' + aRoot + $(this).text() + authorStr + '" target="_blank" >' + amazonIconUrl + '</a></td>');
         }
     );
 }
