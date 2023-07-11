@@ -50,7 +50,7 @@
                 console.log("index=" + authorIndex);
             }
         });
-        $headerColumn.before('<th><span class="smallfont">Amazon</span></th>');
+        $headerColumn.before('<th  style="text-align:center;"><span class="smallfont">amzn</span></th>');
 
 
         $lineColumn.each(
@@ -64,7 +64,7 @@
                     authorStr = ''
                 }
                 // console.log('authorStr = ' + authorStr);
-                $(this).before('<td><a href="' + aRoot + $(this).text() + authorStr + '" target="_blank" >' + amazonIconUrl + '</a></td>');
+                $(this).before('<td align="center"><a href="' + aRoot + $(this).text() + authorStr + '" target="_blank" >' + amazonIconUrl + '</a></td>');
             }
         );
     }
@@ -131,15 +131,14 @@
         var aRoot = 'https://www.amazon.co.jp/o/ASIN/';
         var asin = isbn2asin(getIsbn());
 
-        var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
-
+        // var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
+        var $linkSetPoint = $('ul.ul-list-group');
 
         console.log('asin = ' + asin);
 
-        var ancHtml = '<a href="' + aRoot + asin + '" class="list-group-item" style="padding-left: 25px;">' + amazonIconUrl + '</a>';
+        var ancHtml = '<li><div style="padding: 5px;"><a href="' + aRoot + asin + '" class="btn btn-success linkbtn" >' + amazonIconUrl + '</a></div></li>';
         //            anc.innerHTML = 'Amazon.co.jp\u3067\u30c1\u30a7\u30c3\u30af';
-        $linkSetPoint.append(ancHtml);
-        // isbn_node.appendChild(anc);
+        $linkSetPoint.append('<li>').append(ancHtml)
         // $anc.style.marginLeft = '10px';
 
 
@@ -161,19 +160,16 @@
         console.log("新着案内");
 
         var aRoot = 'https://www.amazon.co.jp/s/?keywords=';
-
-        var $headerColumn = $('#contents > form:nth-child(9) > div > table > tbody > tr.basemark > th:nth-child(3)');
-        var $lineColumn = $('#contents > form:nth-child(9) > div > table > tbody > tr > td:nth-child(3)');
-
-        $("td[colspan=7]").attr('colspan', 8);
+        var $headerColumn = $('#contents > form > div > div > div > table > tbody > tr.basemark > th:nth-child(3)');
+        var $lineColumn = $('#contents > form > div > div > div > table > tbody > tr > td:nth-child(3)');
         addColumn($headerColumn, $lineColumn, aRoot);
     }
 
     function bestRead() {
         console.log("ベストリーダー");
         var aRoot = 'https://www.amazon.co.jp/s/?keywords=';
-        var $headerColumn = $('#contents > form:nth-child(9) > div > table.table > tbody > tr.basemark > th:nth-child(3)');
-        var $lineColumn = $('#contents > form:nth-child(9) > div > table.table > tbody > tr > td:nth-child(3)');
+        var $headerColumn = $('#contents > form > div > div > div > table > tbody > tr.basemark > th:nth-child(3)');
+        var $lineColumn = $('#contents > form > div > div > div > table > tbody > tr > td:nth-child(3)');
 
         addColumn($headerColumn, $lineColumn, aRoot);
     }
@@ -183,8 +179,8 @@
 
         var aRoot = 'https://www.amazon.co.jp/s/?keywords=';
 
-        var $headerColumn = $('#contents > form:nth-child(9) > div > table.table > tbody > tr.basemark > th:nth-child(3)');
-        var $lineColumn = $('#contents > form:nth-child(9) > div > table.table > tbody > tr > td:nth-child(3)');
+        var $headerColumn = $('#contents > form > div > div > div > table > tbody > tr.basemark > th:nth-child(3)');
+        var $lineColumn = $('#contents > form > div > div > div > table > tbody > tr > td:nth-child(3)');
 
         addColumn($headerColumn, $lineColumn, aRoot);
     }
