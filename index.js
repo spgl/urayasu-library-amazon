@@ -129,7 +129,12 @@
         console.log("書誌詳細");
 
         var aRoot = 'https://www.amazon.co.jp/o/ASIN/';
-        var asin = isbn2asin(getIsbn());
+        var isbn = getIsbn()
+
+        var asin = isbn2asin(isbn);
+        var isbnNoHyphen = isbn.replace(/-/g, '').trim().trim('X');
+        console.log(`isbnNoHyphen:${isbnNoHyphen}`)
+
 
         // var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
         var $linkSetPoint = $('ul.ul-list-group');
@@ -138,7 +143,16 @@
 
         var ancHtml = '<li><div style="padding: 5px;"><a href="' + aRoot + asin + '" class="btn btn-success linkbtn" >' + amazonIconUrl + '</a></div></li>';
         //            anc.innerHTML = 'Amazon.co.jp\u3067\u30c1\u30a7\u30c3\u30af';
-        $linkSetPoint.append('<li>').append(ancHtml)
+        $linkSetPoint.append(ancHtml)
+
+        if  (isbnNoHyphen.length === 13) {
+          var  picUrl = `https://ndlsearch.ndl.go.jp/thumbnail/${isbnNoHyphen}.jpg`
+          console.log(`picUrl=${picUrl}`)
+
+          var picHtml = `<li><div style="padding: 5px;"><a href="${aRoot}${asin}"  ><img src="${picUrl}" width=150/></a></div></li>`;
+          $linkSetPoint.append(picHtml)
+        }
+
         // $anc.style.marginLeft = '10px';
 
 
