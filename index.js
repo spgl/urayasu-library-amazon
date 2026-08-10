@@ -161,6 +161,13 @@
 
     var asin = isbn2asin(isbn);
 
+    // 979始まりのISBNなどASINを導出できない場合がある。
+    // 誤ったASINでリンクを張ると存在しない商品ページに飛ぶので、何も出さない
+    if (!asin) {
+      console.log('ASINを導出できないISBN: ' + isbn);
+      return;
+    }
+
     // var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
     var $linkSetPoint = $('ul.ul-list-group');
 
@@ -271,22 +278,28 @@
     console.log(isbn2asin('978-4-87311-618-1'));
   }
 
+  // ASINを導出できないときはnullを返す。呼び出し側でリンクを出さない判断に使う
   function isbn2asin(isbnStr) {
-    var asin;
-    var isbn = isbnStr.trim().replace(/-/g, '');
-    if (isbn.length == 13) {
-      asin = isbn.substr(3, 9);
+    var isbn = String(isbnStr).trim().replace(/-/g, '').toUpperCase();
+
+    if (/^\d{13}$/.test(isbn)) {
+      // ISBN-13からISBN-10に変換できるのは978で始まるものだけ。979にISBN-10は存在せず、
+      // AmazonのASINもISBNから導出できないので、桁数だけで変換すると実在しない値になる
+      if (isbn.indexOf('978') !== 0) return null;
+
+      var body = isbn.substr(3, 9);
       var checkDigit = 0;
-      for (var j = 0; j < asin.length; j++)
-        checkDigit += parseInt(asin[j]) * (10 - j);
+      for (var j = 0; j < body.length; j++)
+        checkDigit += parseInt(body[j], 10) * (10 - j);
       // 検査数字は加重和の11の補数。10のときだけXになり、0はそのまま0
       checkDigit = (11 - (checkDigit % 11)) % 11;
-      if (checkDigit === 10) asin = asin + 'X';
-      else asin = asin + String(checkDigit);
-    } else {
-      asin = isbn;
+      return body + (checkDigit === 10 ? 'X' : String(checkDigit));
     }
-    return asin;
+
+    // ISBN-10はそのままASINとして使える
+    if (/^\d{9}[\dX]$/.test(isbn)) return isbn;
+
+    return null;
   }
 
   function u2a() {
