@@ -10,8 +10,6 @@
   var amazonIconUrl =
     '<img src="https://www.amazon.com/favicon.ico" style="width:18px;height:18px;" />';
 
-  // test();
-
   // Ｍｙページ(利用状況確認)
   if (location.pathname == '/opw/OPW/OPWUSERINFO.CSP') {
     myPage();
@@ -281,10 +279,6 @@
     addColumn($headerColumn, $lineColumn, aRoot);
   }
 
-  function test() {
-    console.log(isbn2asin('978-4-87311-618-1'));
-  }
-
   // ASINを導出できないときはnullを返す。呼び出し側でリンクを出さない判断に使う
   function isbn2asin(isbnStr) {
     var isbn = String(isbnStr).trim().replace(/-/g, '').toUpperCase();
@@ -307,27 +301,6 @@
     if (/^\d{9}[\dX]$/.test(isbn)) return isbn;
 
     return null;
-  }
-
-  function u2a() {
-    var bs = document.getElementsByTagName('strong');
-    for (var i = 0; i < bs.length; i++) {
-      if (bs[i].innerHTML == 'ISBN') {
-        var A_ROOT = 'https://www.amazon.co.jp/o/ASIN/';
-        var isbn_node = bs[i].parentNode.parentNode.nextSibling;
-        var isbn = isbn_node.innerHTML.replace(/-/g, '');
-        var asin;
-        asin = isbn2asin(isbn);
-
-        var anc = document.createElement('a');
-        anc.setAttribute('href', A_ROOT + asin);
-        anc.style.marginLeft = '10px';
-        //            anc.innerHTML = 'Amazon.co.jp\u3067\u30c1\u30a7\u30c3\u30af';
-        anc.innerHTML = amazonIconUrl;
-        isbn_node.appendChild(anc);
-        break;
-      }
-    }
   }
 })(
   window,
