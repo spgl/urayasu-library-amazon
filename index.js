@@ -48,7 +48,8 @@
       .parent()
       .find('th')
       .each(function () {
-        if ($(this).find('span.smallfont').text() == '著者名▼') {
+        // 見出しにソートリンクの説明文が入るようになったため完全一致では拾えない
+        if (/^著者名/.test($(this).find('span.smallfont').text().trim())) {
           authorIndex = $(this).index();
           console.log('index=' + authorIndex);
         }
@@ -66,7 +67,10 @@
           .siblings()
           .eq(authorIndex - 1)
           .text()
-          .replace(/／.*$/, '');
+          .replace(/／.*$/, '')
+          .trim();
+        // 書名の末尾空白に頼らず、明示的に区切る
+        if (authorStr) authorStr = ' ' + authorStr;
       } else {
         authorStr = '';
       }
