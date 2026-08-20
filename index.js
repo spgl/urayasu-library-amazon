@@ -1,5 +1,7 @@
 (function (window, $) {
   if (window != top) return;
+  // このサイトはjQueryを読み込んでいるページとそうでないページがある
+  if (!$) return;
   if (location.hostname !== 'opac.city.urayasu.chiba.jp') return;
 
   // console.log("main script");
@@ -322,4 +324,9 @@
       }
     }
   }
-})(window, $);
+})(
+  window,
+  // 素の $ だとjQueryが無いフレーム(OPWAFFILIATE.CSPのiframe等)で
+  // ReferenceErrorになる。プロパティ参照なら未定義でも例外にならない
+  window.jQuery,
+);
