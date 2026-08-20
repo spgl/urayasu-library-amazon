@@ -96,10 +96,10 @@
       console.log('Myページ-貸出');
 
       var $headerColumn = $(
-        '#ContentLend > form > div.container > table > tbody > tr.basemark > th:nth-child(3)',
+        '#ContentLend > form > div.row > table > tbody > tr.basemark > th:nth-child(3)',
       );
       var $lineColumn = $(
-        '#ContentLend > form > div.container > table > tbody > tr > td:nth-child(3)',
+        '#ContentLend > form > div.row > table > tbody > tr > td:nth-child(3)',
       );
 
       $('td[colspan=6]').attr('colspan', 7);
@@ -111,10 +111,10 @@
       console.log('Myページ-予約');
 
       var $headerColumn = $(
-        '#ContentRsv > form > div.container > table > tbody > tr.basemark > th:nth-child(4)',
+        '#ContentRsv > form > div.row > table > tbody > tr.basemark > th:nth-child(5)',
       );
       var $lineColumn = $(
-        '#ContentRsv > form > div.container > table > tbody > tr > td:nth-child(4)',
+        '#ContentRsv > form > div.row > table > tbody > tr > td:nth-child(5)',
       );
 
       addColumn($headerColumn, $lineColumn, aRoot);
@@ -139,10 +139,10 @@
       console.log('Myページ-予約取り消し');
 
       var $headerColumn = $(
-        '#ContentRsvd > form > div.container > table > tbody > tr.basemark > th:nth-child(3)',
+        '#ContentRsvd > form > div.row > table > tbody > tr.basemark > th:nth-child(3)',
       );
       var $lineColumn = $(
-        '#ContentRsvd > form > div.container > table > tbody > tr > td:nth-child(3)',
+        '#ContentRsvd > form > div.row > table > tbody > tr > td:nth-child(3)',
       );
 
       addColumn($headerColumn, $lineColumn, aRoot);
