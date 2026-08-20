@@ -156,25 +156,33 @@
     console.log('書誌詳細');
 
     var aRoot = 'https://www.amazon.co.jp/o/ASIN/';
+    var COVER_WIDTH = 150;
+    var COVER_HEIGHT = 200;
+
+    // var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
+    var $linkSetPoint = $('ul.ul-list-group');
+
+    injectCoverStyle();
+
     var isbn = getIsbn();
 
-    // \u96d1\u8a8c\u30fb\u8996\u8074\u899a\u8cc7\u6599\u306a\u3069ISBN\u3092\u6301\u305f\u306a\u3044\u66f8\u8a8c\u304c\u3042\u308b
+    // 雑誌・視聴覚資料などISBNを持たない書誌がある。Amazon側の商品を特定できないので
+    // リンクは張らず、書影が「無い」ことだけを示す
     if (!isbn) {
-      console.log('ISBN\u306a\u3057');
+      console.log('ISBNなし');
+      showNoImage(appendCoverBox(null));
       return;
     }
 
     var asin = isbn2asin(isbn);
 
     // 979始まりのISBNなどASINを導出できない場合がある。
-    // 誤ったASINでリンクを張ると存在しない商品ページに飛ぶので、何も出さない
+    // 誤ったASINでリンクを張ると存在しない商品ページに飛ぶので、リンクは張らない
     if (!asin) {
       console.log('ASINを導出できないISBN: ' + isbn);
+      showNoImage(appendCoverBox(null));
       return;
     }
-
-    // var $linkSetPoint = $('#content > div:nth-child(1) > div.row > div.col-xs-2 > div');
-    var $linkSetPoint = $('ul.ul-list-group');
 
     console.log('asin = ' + asin);
 
@@ -185,38 +193,101 @@
       '" class="btn btn-success linkbtn" >' +
       amazonIconUrl +
       '</a></div></li>';
-    //            anc.innerHTML = 'Amazon.co.jp\u3067\u30c1\u30a7\u30c3\u30af';
     $linkSetPoint.append(ancHtml);
 
-    // \u56fd\u4f1a\u56f3\u66f8\u9928\u306e\u66f8\u5f71API\u306f2026-03-31\u3067\u63d0\u4f9b\u7d42\u4e86\u3057\u305f\u306e\u3067Amazon\u306e\u66f8\u5f71\u3092\u4f7f\u3046\u3002
-    // .09.\u306f\u30ed\u30b1\u30fc\u30eb(\u65e5\u672c)\u3001LZZZZZZZ\u306f\u5927\u30b5\u30a4\u30ba\u3092\u6307\u3059\u3002\u516c\u5f0f\u306b\u6587\u66f8\u5316\u3055\u308c\u305f\u4ed5\u69d8\u3067\u306f\u306a\u3044\u306e\u3067
-    // \u4e88\u544a\u306a\u304f\u58ca\u308c\u3046\u308b\u304c\u3001\u305d\u306e\u5834\u5408\u3082\u66f8\u5f71\u304c\u51fa\u306a\u304f\u306a\u308b\u3060\u3051\u3067\u4e0a\u306eAmazon\u30ea\u30f3\u30af\u306f\u6b8b\u308b\u3002
+    // 国会図書館の書影APIは2026-03-31で提供終了したのでAmazonの書影を使う。
+    // .09.はロケール(日本)、LZZZZZZZは大サイズを指す。公式に文書化された仕様ではないので
+    // 予告なく壊れうるが、その場合も書影が出なくなるだけで上のAmazonリンクは残る。
     var picUrl = `https://m.media-amazon.com/images/P/${asin}.09.LZZZZZZZ.jpg`;
     console.log(`picUrl=${picUrl}`);
 
-    // \u66f8\u5f71\u304c\u7121\u3044ASIN\u306b\u306f1x1\u306e\u900f\u904eGIF\u304c\u8fd4\u308b\u3002\u5148\u306b\u8aad\u3093\u3067\u6709\u7121\u3092\u78ba\u304b\u3081\u3066\u304b\u3089\u8cbc\u308b
+    // 書影が無いASINには1x1の透過GIFが返る。先に枠を置いてスピナーを見せ、
+    // 読み込み結果に応じて書影かNO IMAGEに差し替える。何も出ないと
+    // 「待ち」なのか「無い」のか区別がつかないため
+    var $coverBox = appendCoverBox(asin);
+
     var probe = new Image();
     probe.onload = function () {
       if (probe.naturalWidth <= 1) {
-        console.log('\u66f8\u5f71\u306a\u3057');
+        console.log('書影なし');
+        showNoImage($coverBox);
         return;
       }
-      $linkSetPoint.append(
-        `<li><div style="padding: 5px;"><a href="${aRoot}${asin}"><img src="${picUrl}" width="150" /></a></div></li>`,
-      );
+      $coverBox.replaceWith(`<img src="${picUrl}" width="${COVER_WIDTH}" />`);
+    };
+    probe.onerror = function () {
+      console.log('書影の取得に失敗');
+      showNoImage($coverBox);
     };
     probe.src = picUrl;
 
-    // $anc.style.marginLeft = '10px';
+    // 書影の枠を置く。linkAsinがnullのときは飛び先が無いのでリンクにしない
+    function appendCoverBox(linkAsin) {
+      var box = '<div class="u2a-cover-box"><div class="u2a-spinner"></div></div>';
+      $linkSetPoint.append(
+        linkAsin
+          ? `<li><div style="padding: 5px;"><a href="${aRoot}${linkAsin}">${box}</a></div></li>`
+          : `<li><div style="padding: 5px;">${box}</div></li>`,
+      );
+      return $linkSetPoint.find('.u2a-cover-box').last();
+    }
 
+    function showNoImage($box) {
+      $box.html('<span class="u2a-noimage">NO IMAGE</span>');
+    }
+
+    function injectCoverStyle() {
+      $('head').append(
+        `<style>
+        .u2a-cover-box {
+          width: ${COVER_WIDTH}px;
+          height: ${COVER_HEIGHT}px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          background: #e8e8e4;
+          border: 1px solid #ccc;
+        }
+        .u2a-noimage {
+          color: #999;
+          font: bold 14px/1 sans-serif;
+          letter-spacing: 1px;
+        }
+        .u2a-spinner {
+          width: 28px;
+          height: 28px;
+          border: 3px solid #ccc;
+          border-top-color: #888;
+          border-radius: 50%;
+          animation: u2a-spin 0.8s linear infinite;
+        }
+        @keyframes u2a-spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      </style>`,
+      );
+    }
+
+    // 書誌情報の見出しからISBN行を探す。長い階層指定は壊れやすいのでth全体を走査する
+    // (このページでISBNを含むthは1つだけ)
     function getIsbn() {
-      var isbn;
-      $(
-        '#content > div:nth-child(1) > div.row > div.col-xs-8 > table > tbody > tr > th',
-      ).each(function () {
-        if ($(this).text() == 'ISBN') {
-          isbn = $(this).parent().find('td').text();
-          // console.log($(this).parent().find('td').text());
+      var isbn = null;
+      $('th').each(function () {
+        if (!/ISBN/.test($(this).text())) return;
+        // セルに注記などが混ざることがあるのでISBNらしき部分だけを取り出す。
+        // ハイフンは全角・ダッシュ類も除く。13桁を先に見るのは、資料バーコードのような
+        // 数字列を10桁側で拾わないため
+        var norm = $(this)
+          .parent()
+          .find('td')
+          .text()
+          .replace(/[-‐-―−－]/g, '');
+        var m = norm.match(/97[89]\d{10}/) || norm.match(/\d{9}[\dX]/i);
+        if (m) {
+          isbn = m[0];
           return false;
         }
       });
