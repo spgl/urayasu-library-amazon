@@ -67,7 +67,8 @@
           .siblings()
           .eq(authorIndex - 1)
           .text()
-          .replace(/／.*$/, '')
+          // 役割表記の区切りは全角/半角が混在する(洋書は半角が多い)
+          .replace(/[／\/].*$/, '')
           .trim();
         // 書名の末尾空白に頼らず、明示的に区切る
         if (authorStr) authorStr = ' ' + authorStr;
